@@ -1,0 +1,345 @@
+
+/* PropertyCard.css */
+
+/* Property card container */
+.property-card {
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #eae6f4;
+  border-radius: 16px;
+  box-shadow: 0 5px 20px rgba(35, 29, 70, 0.07);
+  font-family: "Segoe UI", Arial, sans-serif;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.property-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(35, 29, 70, 0.13);
+}
+
+/* Property image section */
+.property-image-container {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  background: #f0edf8;
+}
+
+.property-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.property-card:hover .property-image {
+  transform: scale(1.05);
+}
+
+/* Property status badge */
+.property-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  padding: 7px 11px;
+  border-radius: 20px;
+  background: #e5f9ed;
+  color: #187844;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.property-badge.unavailable {
+  background: #fee8e8;
+  color: #b42318;
+}
+
+.property-badge.featured {
+  background: #fff1ce;
+  color: #8a5b00;
+}
+
+/* Favorite button */
+.property-favorite-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  color: #6f6983;
+  font-size: 21px;
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.property-favorite-btn:hover {
+  color: #e54870;
+  transform: scale(1.1);
+}
+
+.property-favorite-btn.active {
+  color: #e54870;
+}
+
+/* Main property details */
+.property-content {
+  padding: 20px;
+}
+
+.property-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.property-title {
+  margin: 0;
+  color: #292345;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.property-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  color: #514968;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.property-rating-star {
+  color: #f4ad24;
+  font-size: 16px;
+}
+
+/* Location */
+.property-location {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 0 0 15px;
+  color: #817b96;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.property-location-icon {
+  flex-shrink: 0;
+  color: #7662e8;
+  font-size: 16px;
+}
+
+/* Rent section */
+.property-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  margin-bottom: 15px;
+}
+
+.property-price {
+  color: #5943c6;
+  font-size: 25px;
+  font-weight: 800;
+}
+
+.property-price-period {
+  color: #89839e;
+  font-size: 12px;
+}
+
+/* Room information */
+.property-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-bottom: 17px;
+}
+
+.property-info-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: #f6f4ff;
+  color: #655b88;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.property-info-icon {
+  font-size: 14px;
+}
+
+/* Amenities */
+.property-amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.property-amenity {
+  padding: 6px 9px;
+  border: 1px solid #eeeaf7;
+  border-radius: 7px;
+  color: #6f6983;
+  font-size: 11px;
+  background: #ffffff;
+}
+
+.property-amenity.more {
+  background: #f0edff;
+  border-color: #e1d9ff;
+  color: #6550c4;
+  font-weight: 600;
+}
+
+/* AI recommendation label */
+.property-ai-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 15px;
+  padding: 7px 10px;
+  border: 1px solid #e5ddff;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #f6f2ff, #efedff);
+  color: #6550c4;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Card action buttons */
+.property-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid #eeeaf7;
+}
+
+.property-details-btn,
+.property-book-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 43px;
+  padding: 11px 14px;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.property-details-btn {
+  flex: 1;
+  border: 1px solid #ded7fa;
+  background: #ffffff;
+  color: #5943c6;
+}
+
+.property-details-btn:hover {
+  background: #f5f2ff;
+}
+
+.property-book-btn {
+  flex: 1;
+  border: none;
+  background: linear-gradient(135deg, #7662e8, #5943c6);
+  color: #ffffff;
+}
+
+.property-book-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 14px rgba(89, 67, 198, 0.2);
+}
+
+.property-book-btn:disabled {
+  background: #c9c3e4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Property listing grid */
+.property-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  align-items: stretch;
+}
+
+/* Tablet */
+@media (max-width: 1050px) {
+  .property-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .property-image-container {
+    height: 200px;
+  }
+
+  .property-content {
+    padding: 17px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 650px) {
+  .property-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .property-image-container {
+    height: 220px;
+  }
+
+  .property-title {
+    font-size: 18px;
+  }
+
+  .property-price {
+    font-size: 23px;
+  }
+}
+
+/* Accessibility */
+.property-card button:focus-visible,
+.property-card a:focus-visible {
+  outline: 3px solid #a99bf7;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .property-card,
+  .property-image,
+  .property-favorite-btn,
+  .property-details-btn,
+  .property-book-btn {
+    transition: none;
+  }
+}
