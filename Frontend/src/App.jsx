@@ -276,4 +276,3 @@ const [bookingMessage, setBookingMessage] = useState('')
     </div>
   )
 }
-
