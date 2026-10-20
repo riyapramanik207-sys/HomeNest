@@ -1,122 +1,279 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
+
+import { useEffect, useMemo, useState } from 'react'
 import './App.css'
+import BookingForm from './components/BookingForm'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [properties, setProperties] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  const [city, setCity] = useState('')
+  const [roomType, setRoomType] = useState('All')
+  const [minRent, setMinRent] = useState('')
+  const [maxRent, setMaxRent] = useState('')
+  const [availability, setAvailability] = useState('All')
+  const [selectedProperty, setSelectedProperty] = useState(null)
+const [bookingMessage, setBookingMessage] = useState('')
+
+  useEffect(() => {
+    fetch('http://localhost:8080/api/properties')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Unable to load PG listings')
+        }
+        return response.json()
+      })
+      .then((data) => {
+        setProperties(Array.isArray(data) ? data : [])
+        setLoading(false)
+      })
+      .catch(() => {
+        setError(
+          'Could not connect to the backend. Check that Spring Boot is running.'
+        )
+        setLoading(false)
+      })
+  }, [])
+
+  const roomTypes = useMemo(
+    () => [...new Set(properties.map((pg) => pg.roomType).filter(Boolean))],
+    [properties]
+  )
+
+  const filteredProperties = useMemo(() => {
+    return properties.filter((pg) => {
+      const matchesCity = (pg.city || '')
+        .toLowerCase()
+        .includes(city.trim().toLowerCase())
+
+      const matchesRoom =
+        roomType === 'All' || pg.roomType === roomType
+
+      const rent = Number(pg.rent) || 0
+      const matchesMin = minRent === '' || rent >= Number(minRent)
+      const matchesMax = maxRent === '' || rent <= Number(maxRent)
+
+      const matchesAvailability =
+        availability === 'All' ||
+        (availability === 'Available' && pg.available === true) ||
+        (availability === 'Unavailable' && pg.available === false)
+
+      return (
+        matchesCity &&
+        matchesRoom &&
+        matchesMin &&
+        matchesMax &&
+        matchesAvailability
+      )
+    })
+  }, [properties, city, roomType, minRent, maxRent, availability])
+
+  function resetFilters() {
+    setCity('')
+    setRoomType('All')
+    setMinRent('')
+    setMaxRent('')
+    setAvailability('All')
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
+    <div className="homenest">
+      <header className="navbar">
+        <h2>HomeNest</h2>
+        <nav>
+          <a href="#home">Home</a>
+          <a href="#properties">PG Listings</a>
+          <a href="#about">About</a>
+        </nav>
+      </header>
+
+      <main>
+        <section className="hero" id="home">
+          <p className="tagline">FIND YOUR PLACE TO BELONG</p>
+          <h1>Find Your Perfect PG with HomeNest</h1>
           <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
+            Discover comfortable and affordable accommodation
+            for students and working professionals.
           </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+          <a className="explore-btn" href="#properties">
+            Explore PGs
+          </a>
+        </section>
 
-      <div className="ticks"></div>
+        <section className="properties" id="properties">
+          <h2>Find Your Stay</h2>
+          <p>Search and filter PG accommodations to match your needs.</p>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+          <div className="filter-panel">
+            <div className="filter-field">
+              <label htmlFor="city">Search by city</label>
+              <input
+                id="city"
+                type="text"
+                placeholder="e.g. Kolkata"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+              />
+            </div>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+            <div className="filter-field">
+              <label htmlFor="roomType">Room type</label>
+              <select
+                id="roomType"
+                value={roomType}
+                onChange={(e) => setRoomType(e.target.value)}
+              >
+                <option value="All">All room types</option>
+                {roomTypes.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="filter-field">
+              <label htmlFor="minRent">Minimum rent (₹/month)</label>
+              <input
+                id="minRent"
+                type="number"
+                min="0"
+                placeholder="0"
+                value={minRent}
+                onChange={(e) => setMinRent(e.target.value)}
+              />
+            </div>
+
+            <div className="filter-field">
+              <label htmlFor="maxRent">Maximum rent (₹/month)</label>
+              <input
+                id="maxRent"
+                type="number"
+                min="0"
+                placeholder="Any budget"
+                value={maxRent}
+                onChange={(e) => setMaxRent(e.target.value)}
+              />
+            </div>
+
+            <div className="filter-field">
+              <label htmlFor="availability">Availability</label>
+              <select
+                id="availability"
+                value={availability}
+                onChange={(e) => setAvailability(e.target.value)}
+              >
+                <option value="All">All PGs</option>
+                <option value="Available">Available only</option>
+                <option value="Unavailable">Unavailable</option>
+              </select>
+            </div>
+
+            <button
+              className="reset-button"
+              type="button"
+              onClick={resetFilters}
+            >
+              Reset Filters
+            </button>
+          </div>
+
+          <p className="results-count">
+            {loading
+              ? 'Loading PG listings...'
+              : `Showing ${filteredProperties.length} of ${properties.length} PGs`}
+          </p>
+
+          {error && <p className="error-message">{error}</p>}
+
+          {!loading && !error && filteredProperties.length === 0 && (
+            <div className="no-results">
+              <h3>No matching PGs found</h3>
+              <p>Try another city or adjust your filters.</p>
+              <button type="button" onClick={resetFilters}>
+                Clear Filters
+              </button>
+            </div>
+          )}
+
+          <div className="property-grid">
+            {filteredProperties.map((pg) => (
+              <article className="property-card" key={pg.id}>
+                {pg.imageUrl && (
+                  <img
+                    className="property-image"
+                    src={pg.imageUrl}
+                    alt={pg.name || 'PG accommodation'}
+                    
+                  />
+                  
+                )}
+
+                <div className="property-details">
+                  <h3>{pg.name}</h3>
+                  <p><strong>City:</strong> {pg.city || 'Not specified'}</p>
+                  <p><strong>Address:</strong> {pg.address || 'Not specified'}</p>
+                  <p><strong>Room:</strong> {pg.roomType || 'Not specified'}</p>
+                  <p className="rent">
+                    ₹{pg.rent ?? 'Not specified'}
+                    <span> / month</span>
+                  </p>
+                  <p>{pg.description}</p>
+                  <p className={pg.available ? 'available' : 'unavailable'}>
+                    {pg.available ? 'Available' : 'Not available'}
+                  </p>
+                  <button
+  type="button"
+  className="book-now-button"
+  disabled={!pg.available}
+  onClick={() => {
+    setBookingMessage('')
+    setSelectedProperty(pg)
+  }}
+>
+  Book Now
+</button>
+                  
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="about" id="about">
+          <h2>About HomeNest</h2>
+          <p>
+            A PG rental and booking platform designed to make finding
+            accommodation easier, safer, and more convenient.
+          </p>
+        </section>
+      </main>
+{bookingMessage && (
+  <p className="booking-success" role="status">
+    {bookingMessage}
+  </p>
+)}
+
+{selectedProperty && (
+  <BookingForm
+    property={selectedProperty}
+    onClose={() => setSelectedProperty(null)}
+    onSubmit={(booking) => {
+      console.log('Booking request preview:', booking)
+      setSelectedProperty(null)
+      setBookingMessage(
+        'Booking form submitted successfully for ' +
+        booking.propertyName +
+        '. This is a demo; the booking has not been saved.'
+      )
+    }}
+  />
+)}
+      <footer>
+        © 2026 HomeNest — Find a place to call home.
+      </footer>
+    </div>
   )
 }
 
-export default App

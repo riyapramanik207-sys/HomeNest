@@ -182,3 +182,143 @@
     border-right-color: var(--border);
   }
 }
+
+/* PG search and filters */
+.filter-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  padding: 22px;
+  margin: 24px 0;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-field label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.filter-field input,
+.filter-field select {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 11px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  color: #111827;
+  font: inherit;
+}
+
+.filter-field input:focus,
+.filter-field select:focus {
+  outline: 2px solid #93c5fd;
+  border-color: #2563eb;
+}
+
+.reset-button,
+.no-results button {
+  align-self: end;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #1d4ed8;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.reset-button:hover,
+.no-results button:hover {
+  background: #1e40af;
+}
+
+.results-count {
+  margin: 18px 0;
+  color: #4b5563;
+  font-weight: 600;
+}
+
+.property-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 22px;
+  margin: 24px 0;
+}
+
+.property-card {
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.property-image {
+  display: block;
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.property-details {
+  padding: 18px;
+}
+
+.property-details h3 {
+  margin-top: 0;
+  color: #111827;
+}
+
+.rent {
+  color: #166534;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.rent span {
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.available {
+  color: #15803d;
+  font-weight: 600;
+}
+
+.unavailable {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.no-results {
+  padding: 28px;
+  text-align: center;
+  background: #f9fafb;
+  border-radius: 12px;
+}
+
+.error-message {
+  color: #b91c1c;
+}
+
+@media (max-width: 600px) {
+  .filter-panel {
+    padding: 16px;
+  }
+
+  .property-grid {
+    grid-template-columns: 1fr;
+  }
+}
