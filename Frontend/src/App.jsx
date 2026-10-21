@@ -18,6 +18,11 @@ function App() {
 const [bookingMessage, setBookingMessage] = useState('')
 const [bookingError, setBookingError] = useState('')
 const [bookingSubmitting, setBookingSubmitting] = useState(false)
+const [historyEmail, setHistoryEmail] = useState('')
+const [bookingHistory, setBookingHistory] = useState([])
+const [historyLoading, setHistoryLoading] = useState(false)
+const [historyError, setHistoryError] = useState('')
+const [historySearched, setHistorySearched] = useState(false)
 
  
 useEffect(() => {
@@ -79,6 +84,34 @@ useEffect(() => {
       )
     })
   }, [properties, city, roomType, minRent, maxRent, availability])
+  
+async function loadBookingHistory(event) {
+  event.preventDefault()
+  setHistoryLoading(true)
+  setHistoryError('')
+  setBookingHistory([])
+  setHistorySearched(false)
+
+  try {
+    const response = await fetch(
+      `http://localhost:8080/api/bookings?email=${encodeURIComponent(historyEmail.trim())}`
+    )
+
+    const data = await response.json().catch(() => [])
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Unable to load booking history.')
+    }
+
+    setBookingHistory(Array.isArray(data) ? data : [])
+    setHistorySearched(true)
+  } catch (error) {
+    setHistoryError(error.message || 'Could not connect to the backend.')
+  } finally {
+    setHistoryLoading(false)
+  }
+}
+
 
   function resetFilters() {
     setCity('')
@@ -96,6 +129,7 @@ useEffect(() => {
           <a href="#home">Home</a>
           <a href="#properties">PG Listings</a>
           <a href="#about">About</a>
+          <a href="#booking-history">Booking History</a>
         </nav>
       </header>
 
@@ -251,6 +285,44 @@ useEffect(() => {
             ))}
           </div>
         </section>
+        
+<section className="booking-history" id="booking-history">
+  <h2>My Booking History</h2>
+  <p>Enter the email address you used when booking a PG.</p>
+
+  <form onSubmit={loadBookingHistory}>
+    <label htmlFor="historyEmail">Email address</label>
+    <input
+      id="historyEmail"
+      type="email"
+      required
+      value={historyEmail}
+      onChange={(e) => setHistoryEmail(e.target.value)}
+      placeholder="Enter your booking email"
+    />
+    <button type="submit" disabled={historyLoading}>
+      {historyLoading ? 'Loading...' : 'View History'}
+    </button>
+  </form>
+
+  {historyError && <p className="error-message">{historyError}</p>}
+
+  {historySearched && bookingHistory.length === 0 && !historyError && (
+    <p>No bookings found for this email.</p>
+  )}
+
+  {bookingHistory.map((booking) => (
+    <article key={booking.id} className="property-card">
+      <h3>{booking.propertyName || 'PG Booking'}</h3>
+      <p><strong>Booking ID:</strong> {booking.id}</p>
+      <p><strong>Move-in date:</strong> {booking.moveInDate}</p>
+      <p><strong>Duration:</strong> {booking.duration}</p>
+      <p><strong>Occupants:</strong> {booking.occupants}</p>
+      <p><strong>Status:</strong> {booking.status}</p>
+    </article>
+  ))}
+</section>
+
 
         <section className="about" id="about">
           <h2>About HomeNest</h2>
