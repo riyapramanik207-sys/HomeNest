@@ -1,7 +1,12 @@
 
 import { useState } from 'react'
 
-function BookingForm({ property, onClose, onSubmit }) {
+function BookingForm({
+  property,
+  onClose,
+  onSubmit,
+  isSubmitting = false,
+}) {
   const [form, setForm] = useState({
     fullName: '',
     email: '',
@@ -171,9 +176,13 @@ function BookingForm({ property, onClose, onSubmit }) {
             number here. Your details will not be saved to the database yet.
           </p>
 
-          <button className="book-submit" type="submit">
-            Submit Booking Request
-          </button>
+          <button
+  className="book-submit"
+  type="submit"
+  disabled={isSubmitting}
+>
+  {isSubmitting ? 'Submitting...' : 'Submit Booking Request'}
+</button>
 
           <button
             className="booking-cancel"

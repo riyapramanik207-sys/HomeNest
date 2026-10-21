@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import './App.css'
 import BookingForm from './components/BookingForm'
+import { getProperties } from './services/pgService';
 
 function App() {
   const [properties, setProperties] = useState([])
@@ -15,26 +16,36 @@ function App() {
   const [availability, setAvailability] = useState('All')
   const [selectedProperty, setSelectedProperty] = useState(null)
 const [bookingMessage, setBookingMessage] = useState('')
+const [bookingError, setBookingError] = useState('')
+const [bookingSubmitting, setBookingSubmitting] = useState(false)
 
-  useEffect(() => {
-    fetch('http://localhost:8080/api/properties')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Unable to load PG listings')
-        }
-        return response.json()
-      })
-      .then((data) => {
-        setProperties(Array.isArray(data) ? data : [])
-        setLoading(false)
-      })
-      .catch(() => {
+ 
+useEffect(() => {
+  let cancelled = false;
+
+  getProperties()
+    .then((data) => {
+      if (!cancelled) {
+        setProperties(Array.isArray(data) ? data : []);
+        setLoading(false);
+      }
+    })
+    .catch((error) => {
+      console.error('Failed to load properties:', error);
+
+      if (!cancelled) {
         setError(
           'Could not connect to the backend. Check that Spring Boot is running.'
-        )
-        setLoading(false)
-      })
-  }, [])
+        );
+        setLoading(false);
+      }
+    });
+
+  return () => {
+    cancelled = true;
+  };
+}, []);
+
 
   const roomTypes = useMemo(
     () => [...new Set(properties.map((pg) => pg.roomType).filter(Boolean))],
@@ -254,25 +265,71 @@ const [bookingMessage, setBookingMessage] = useState('')
     {bookingMessage}
   </p>
 )}
+{bookingError && (
+  <p className="error-message" role="alert">
+    {bookingError}
+  </p>
+)}
+
 
 {selectedProperty && (
   <BookingForm
     property={selectedProperty}
-    onClose={() => setSelectedProperty(null)}
-    onSubmit={(booking) => {
-      console.log('Booking request preview:', booking)
+    onClose={() => {
       setSelectedProperty(null)
-      setBookingMessage(
-        'Booking form submitted successfully for ' +
-        booking.propertyName +
-        '. This is a demo; the booking has not been saved.'
-      )
+      setBookingError('')
+    }}
+    onSubmit={async (booking) => {
+      setBookingSubmitting(true)
+      setBookingError('')
+      setBookingMessage('')
+
+      try {
+        const response = await fetch('http://localhost:8080/api/bookings', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            propertyId: booking.propertyId,
+            fullName: booking.fullName,
+            email: booking.email,
+            phone: booking.phone,
+            moveInDate: booking.moveInDate,
+            duration: booking.duration,
+            occupants: Number(booking.occupants),
+            foodPreference: booking.foodPreference,
+            idProofType: booking.idProofType,
+          }),
+        })
+
+        const data = await response.json().catch(() => ({}))
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Unable to submit your booking.')
+        }
+
+        setSelectedProperty(null)
+        setBookingMessage(
+          `Booking request submitted successfully! Booking ID: ${data.id}. Status: ${data.status}.`
+        )
+      } catch (error) {
+        setBookingError(
+          error.message || 'Could not connect to the backend. Please try again.'
+        )
+      } finally {
+        setBookingSubmitting(false)
+      }
     }}
   />
 )}
+
       <footer>
         © 2026 HomeNest — Find a place to call home.
       </footer>
     </div>
   )
 }
+
+export default App
+
