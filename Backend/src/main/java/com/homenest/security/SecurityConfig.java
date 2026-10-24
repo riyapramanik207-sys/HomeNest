@@ -57,7 +57,10 @@ public class SecurityConfig {
 public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
 
-    configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+    configuration.setAllowedOrigins(List.of(
+    "http://localhost:5173",
+    "http://localhost:5174"
+));
     configuration.setAllowedMethods(
         List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")
     );
@@ -80,12 +83,15 @@ public SecurityFilterChain securityFilterChain(
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers(HttpMethod.POST,
-                "/api/auth/register", "/api/auth/login").permitAll()
-            .requestMatchers(HttpMethod.GET,
-                "/api/auth/me").authenticated()
-            .anyRequest().authenticated()
-        )
+    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+    .requestMatchers(HttpMethod.POST,
+        "/api/auth/register", "/api/auth/login").permitAll()
+    .requestMatchers(HttpMethod.GET,
+        "/api/properties", "/api/properties/**").permitAll()
+    .requestMatchers(HttpMethod.GET,
+        "/api/auth/me").authenticated()
+    .anyRequest().authenticated()
+)
         .formLogin(form -> form.disable())
         .httpBasic(basic -> basic.disable())
         .sessionManagement(session -> session

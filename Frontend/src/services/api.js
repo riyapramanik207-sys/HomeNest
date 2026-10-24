@@ -1,4 +1,5 @@
-﻿const API_BASE_URL = 'http://localhost:8080/api';
+﻿
+const API_BASE_URL = 'http://localhost:8080/api';
 
 async function apiRequest(path, options = {}) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -30,4 +31,21 @@ export function apiPost(path, body) {
     method: 'POST',
     body: JSON.stringify(body),
   });
+}
+
+// Authentication API functions
+export function registerUser(userData) {
+  return apiPost('/auth/register', userData);
+}
+
+export function loginUser(credentials) {
+  return apiPost('/auth/login', credentials);
+}
+
+export function getCurrentUser() {
+  return apiGet('/auth/me');
+}
+
+export function logoutUser() {
+  return apiPost('/auth/logout', {});
 }
