@@ -11,6 +11,7 @@ import {
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Payment from "./pages/Payment";
 
 function HomePage() {
   const [properties, setProperties] = useState([]);
@@ -107,17 +108,24 @@ function HomePage() {
     setAvailability("All");
   }
 
+  
   async function handleBookingSubmit(formData) {
     setBookingSubmitting(true);
     setBookingMessage("");
     setBookingError("");
 
     try {
-      await apiPost("/bookings", formData);
-      setBookingMessage(
-        "Your booking request was submitted successfully."
-      );
+      const savedBooking = await apiPost("/bookings", formData);
+
+      if (!savedBooking?.id) {
+        throw new Error(
+          "Booking was submitted, but the backend did not return a booking ID."
+        );
+      }
+
       setSelectedProperty(null);
+      window.location.href =
+        `/payment?bookingId=${savedBooking.id}&propertyId=${formData.propertyId}`;
     } catch (err) {
       setBookingError(
         err.message || "Could not submit your booking request."
@@ -126,6 +134,7 @@ function HomePage() {
       setBookingSubmitting(false);
     }
   }
+
   async function handleLogout() {
   try {
     await logoutUser();
@@ -355,6 +364,7 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="/payment" element={<Payment />} />
     </Routes>
   );
 }
