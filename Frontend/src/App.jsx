@@ -12,6 +12,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Payment from "./pages/Payment";
+import BookingHistory from "./pages/BookingHistory";
 
 function HomePage() {
   const [properties, setProperties] = useState([]);
@@ -155,6 +156,9 @@ function HomePage() {
     <span className="text-secondary">
       Welcome, {currentUser.name || currentUser.email}
     </span>
+    <a href="/bookings" className="btn btn-outline-primary btn-sm">
+  My Bookings
+</a>
     <button
       type="button"
       className="btn btn-outline-danger btn-sm"
@@ -365,6 +369,7 @@ export default function App() {
       <Route path="/register" element={<Register />} />
       <Route path="*" element={<Navigate to="/" replace />} />
       <Route path="/payment" element={<Payment />} />
+      <Route path="/bookings" element={<BookingHistory />} />
     </Routes>
   );
 }
