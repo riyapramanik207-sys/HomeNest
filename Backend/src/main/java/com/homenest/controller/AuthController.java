@@ -90,13 +90,17 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/me")
-    public ResponseEntity<?> currentUser(Authentication authentication) {
-        return ResponseEntity.ok(Map.of(
-            "authenticated", true,
-            "email", authentication.getName()
-        ));
-    }
+   @GetMapping("/me")
+public ResponseEntity<?> currentUser(Authentication authentication) {
+    User user = authService.getUserByEmail(authentication.getName());
+
+    return ResponseEntity.ok(Map.of(
+        "authenticated", true,
+        "id", user.getId(),
+        "name", user.getName(),
+        "email", user.getEmail()
+    ));
+}
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(

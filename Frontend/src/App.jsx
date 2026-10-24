@@ -13,6 +13,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Payment from "./pages/Payment";
 import BookingHistory from "./pages/BookingHistory";
+import Account from "./pages/Account";
 
 function HomePage() {
   const [properties, setProperties] = useState([]);
@@ -370,6 +371,7 @@ export default function App() {
       <Route path="*" element={<Navigate to="/" replace />} />
       <Route path="/payment" element={<Payment />} />
       <Route path="/bookings" element={<BookingHistory />} />
+      <Route path="/account" element={<Account />} />
     </Routes>
   );
 }

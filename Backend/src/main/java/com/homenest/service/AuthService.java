@@ -35,4 +35,10 @@ public class AuthService {
 
         return userRepository.save(user);
     }
+@Transactional(readOnly = true)
+public User getUserByEmail(String email) {
+    return userRepository.findByEmailIgnoreCase(email)
+        .orElseThrow(() ->
+            new IllegalArgumentException("User account not found"));
+}
 }
