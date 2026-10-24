@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.Set;
-import java.util.regex.Pattern;
-
 import java.util.List;
 
 @Service
@@ -86,5 +84,30 @@ if (booking.getDuration() == null || !Set.of(
         }
         return bookingRepository.findByEmailIgnoreCaseOrderByCreatedAtDesc(email);
     }
-}
+    public Booking getBookingByIdForUser(Long bookingId, String email) {
+    if (bookingId == null || bookingId <= 0) {
+        throw new IllegalArgumentException("A valid booking ID is required.");
+    }
 
+    if (email == null || email.isBlank()) {
+        throw new IllegalArgumentException("User email is required.");
+    }
+
+    return bookingRepository.findByIdAndEmailIgnoreCase(bookingId, email)
+            .orElseThrow(() ->
+                    new IllegalArgumentException("Booking not found."));
+}
+                    @Transactional
+public Booking cancelBooking(Long bookingId, String email) {
+    Booking booking = getBookingByIdForUser(bookingId, email);
+
+    if (!"PENDING".equalsIgnoreCase(booking.getStatus())) {
+        throw new IllegalArgumentException(
+                "Only pending bookings can be cancelled."
+        );
+    }
+
+    booking.setStatus("CANCELLED");
+    return bookingRepository.save(booking);
+}
+}

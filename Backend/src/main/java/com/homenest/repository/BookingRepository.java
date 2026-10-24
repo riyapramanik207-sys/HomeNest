@@ -4,10 +4,13 @@ package com.homenest.repository;
 import com.homenest.model.Booking;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
+import java.util.Optional;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByEmailIgnoreCaseOrderByCreatedAtDesc(String email);
 
     List<Booking> findByPropertyIdOrderByCreatedAtDesc(Long propertyId);
+
+    Optional<Booking> findByIdAndEmailIgnoreCase(Long id, String email);
 }
