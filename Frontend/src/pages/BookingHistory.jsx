@@ -7,6 +7,7 @@ import {
   getBookingDetails,
   cancelBooking,
 } from "../services/bookingService";
+import { getPaymentsForBooking } from "../services/paymentService";
 
 export default function BookingHistory() {
   const [bookings, setBookings] = useState([]);
@@ -16,6 +17,9 @@ export default function BookingHistory() {
   const [expandedId, setExpandedId] = useState(null);
   const [details, setDetails] = useState({});
   const [busyId, setBusyId] = useState(null);
+  const [payments, setPayments] = useState({});
+const [paymentLoadingId, setPaymentLoadingId] = useState(null);
+const [paymentErrors, setPaymentErrors] = useState({});
 
   async function loadBookings() {
     const user = await getCurrentUser();
@@ -82,7 +86,31 @@ export default function BookingHistory() {
       setBusyId(null);
     }
   }
+async function handleViewPayments(bookingId) {
+  setPaymentLoadingId(bookingId);
 
+  setPaymentErrors((previous) => ({
+    ...previous,
+    [bookingId]: "",
+  }));
+
+  try {
+    const data = await getPaymentsForBooking(bookingId);
+
+    setPayments((previous) => ({
+      ...previous,
+      [bookingId]: Array.isArray(data) ? data : [],
+    }));
+  } catch (err) {
+    setPaymentErrors((previous) => ({
+      ...previous,
+      [bookingId]:
+        err.message || "Could not load payment history.",
+    }));
+  } finally {
+    setPaymentLoadingId(null);
+  }
+}
   async function handleCancel(bookingId) {
     const confirmed = window.confirm(
       `Cancel booking #${bookingId}? This action cannot be undone.`
@@ -275,9 +303,76 @@ export default function BookingHistory() {
                                   ).toLocaleString()
                                 : "—"}
                             </dd>
+                          
                           </dl>
+
+                          <hr className="my-3" />
+
+                          <h6>Payment History</h6>
+
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-success"
+                            disabled={paymentLoadingId === booking.id}
+onClick={() => handleViewPayments(booking.id)}
+                          >
+                            {paymentLoadingId === booking.id
+                              ? "Loading payments..."
+                              : "View Payment History"}
+                          </button>
+
+                          {paymentErrors[booking.id] && (
+                            <div className="alert alert-danger mt-2">
+                              {paymentErrors[booking.id]}
+                            </div>
+                          )}
+
+                          {Object.prototype.hasOwnProperty.call(
+                            payments,
+                            booking.id
+                          ) && (
+                            payments[booking.id].length === 0 ? (
+                              <p className="text-muted mt-2">
+                                No payment records found for this booking.
+                              </p>
+                            ) : (
+                              <div className="table-responsive mt-3">
+                                <table className="table table-sm table-bordered">
+                                  <thead>
+                                    <tr>
+                                      <th>Payment ID</th>
+                                      <th>Amount</th>
+                                      <th>Method</th>
+                                      <th>Status</th>
+                                      <th>Payment Date</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {payments[booking.id].map((payment) => (
+                                      <tr key={payment.id}>
+                                        <td>#{payment.id}</td>
+                                        <td>
+                                          ₹{Number(payment.amount).toLocaleString("en-IN")}
+                                        </td>
+                                        <td>{payment.paymentMethod || "—"}</td>
+                                        <td>{payment.status || "PENDING"}</td>
+                                        <td>
+                                          {payment.createdAt
+                                            ? new Date(
+                                                payment.createdAt
+                                              ).toLocaleString()
+                                            : "—"}
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            )
+                          )}
                         </td>
                       </tr>
+
                     )}
                   </>
                 );
